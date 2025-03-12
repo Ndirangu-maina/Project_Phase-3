@@ -1,47 +1,29 @@
 # Project_Phase-3
+## Business Understanding
 SyriaTel, a telecommunications company, wants to reduce customer churn that is customersleaving the service. Churn is costly as acquiring new customers is more expensive thanretaining existing ones. By predicting which customers are likely to churn, SyriaTel canproactively intervene with retention strategies such as discounts, improved service.
 Stakeholders Include: SyriaTel’s management, marketing team, and customer servicedepartment.
 Value Proposition: To Reduce churn will improve revenue, customer lifetime value, and brandloyalty.
-Business Understanding
+## Problem Statement
 SyriaTel faces a problem where customers are discontinuing their services, leading to revenueloss. The task is to develop a predictive model that identifi es customers likely to churn based onthe below:
-usage patterns
-plan details
-customer service interactions.
-.
-Problem Statement
+- usage patterns
+- plan details
+- customer service interactions.
+## Objectives
 Below are the objectives:
-1.
-To build a binary classifi cation model to predict customer churn.
-2.
-To identify key factors driving churn to inform retention strategies.
-3.
-To achieve high model performance (e.g., accuracy, precision, recall) to ensure actionablepredictions.
-4.
-To provide recommendations to SyriaTel based on insights.
-Objectives
-Data Understandingkeyboard_arrow_down
-import
-pandas
-as
-pd
-import
-numpy
-as
-np
-# Load customer churn dataset
-df = pd.read_csv(
-"Customer_Churn.csv"
-)
-# Basic data understanding
-print
-(df.head())
-print
-(df.info())
-print
-(df.describe())
-
-
-
+1.To build a binary classifi cation model to predict customer churn.
+2.To identify key factors driving churn to inform retention strategies.
+3.To achieve high model performance (e.g., accuracy, precision, recall) to ensure actionablepredictions.
+4.To provide recommendations to SyriaTel based on insights.
+
+## Data Understanding
+
+### Load customer churn dataset
+df = pd.read_csv("Customer_Churn.csv")
+### Basic data understanding
+print (df.head())
+print(df.info())
+print(df.describe())
+
 min 0.000000 0.000000 25% 2.300000 1.000000 50% 2.780000 1.000000 75% 3.270000 2.000000 max5.4000009.000000
 The Customer churn dataset has 21 variables with 3333 observations.
 Our Target Variable is Churn, indicated as either True or False.
@@ -51,122 +33,39 @@ Area Code: There are three area codes represented: 408, 415, and 510. This colum
 Number voice mail messages: The average number of voicemail messages is 8. Manycustomers (over 50%) don't have any voicemail messages. The maximum number ofvoicemail messages is 51.
 Total day minutes: Customers average about 180 minutes of day calls. There's a fairamount of variability in day call duration (std = 54.47). Some customers have very low (0minutes) while others have very high (350.8 minutes) day call usage.
 Total day calls: Customers average about 100 day calls. The number of day calls rangesfrom 0 to 165.
-Total day charge: The average charge is
-0 to $59.64.
+Total day charge: The average charge is 0 to $59.64.
 Total eve minutes, Total eve calls, Total eve charge: These attributes provide similarinsights into evening call activity. For example, average evening minutes are around 201,and the average charge is $17.08.
 Total night minutes, Total night calls, Total night charge: These attributes provide similarinsights into night call activity. For example, average night minutes are around 201, and theaverage charge is $9.04.
 Total intl minutes, Total intl calls, Total intl charge: These relate to international callactivity. On average, customers have about 10.24 minutes of international calls. Asignifi cant number of customers (at least 25%) do not make international calls.
 Customer service calls: The average number of customer service calls is 1.56. Themajority of customers make 2 or fewer customer service calls. Some customers make ahigh number of customer service calls (up to 9).
-30.56.
-T
-h
-e
-c
-h
-a
-r
-g
-e
-s
-r
-a
-n
-g
-e
-f
-r
-o
-m
-Data Cleaningkeyboard_arrow_down
+
+## Data Cleaning
 Correct Formatskeyboard_arrow_down
-# Converting Churn to 0 and 1
-# Converting Categorical columns to strings
-df[
-'churn'
-] = df[
-'churn'
-].
-map
-({
-False
-:
-0
-,
-True
-:
-1
-})
-df[
-'international plan'
-] = df[
-'international plan'
-].astype(
-str
-)
-df[
-'voice mail plan'
-] = df[
-'voice mail plan'
-].astype(
-str
-)
-Handling NAskeyboard_arrow_down
-print
-(df.isnull().
-sum
-())
+### Converting Churn to 0 and 1
+### Converting Categorical columns to strings
+df['churn'] = df['churn'].map({False:0,True:1})
+df['international plan'] = df['international plan'].astype(str)
+df['voice mail plan'] = df['voice mail plan'].astype(str)
+### Handling NAs
+print(df.isnull().sum())
 state 0account length 0area code 0phone number 0international plan 0voice mail plan 0number vmail messages 0total day minutes 0total day calls 0total day charge 0total eve minutes 0total eve calls 0total eve charge 0total night minutes 0total night calls 0total night charge 0total intl minutes 0total intl calls 0total intl charge 0customer service calls 0churn 0dtype: int64
 We do not have any missing values
-Handling Duplicateskeyboard_arrow_down
-# Checking for duplicates
-df.duplicated().
-sum
-()
+### Handling Duplicates
+#### Checking for duplicates
+df.duplicated().sum()
 0
 We do not have duplicates
-Other cleaning stepskeyboard_arrow_down
+### Other cleaning steps
 # Checking for uniqueness in phone number and drop
-ping it
-df.drop(
-'phone number'
-, axis=
-1
-, inplace=
-True
-)
+ping itdf.drop('phone number', axis=1, inplace=True)
 Phone number dropped as it is not relevant in our analysis.
-Feature Engineeringkeyboard_arrow_down
+### Feature Engineering
 # Creating Total Minutes feature
 # Creating Total Charge feature
 # Creating Call per Minute Ratio
-df[
-'total minutes'
-] = df[[
-'total day minutes'
-,
-'total eve minutes'
-,
-'total night minutes'
-df[
-'total charge'
-] = df[[
-'total day charge'
-,
-'total eve charge'
-,
-'total night charge'
-,
-'t
-df[
-'calls per minute'
-] = (df[[
-'total day calls'
-,
-'total eve calls'
-,
-'total night calls'
-,
-1)
+df['total minutes'] = df[['total day minutes','total eve minutes','total night minutes'
+df['total charge'] = df[['total day charge','total eve charge','total night charge','t
+df['calls per minute'] = (df[['total day calls','total eve calls','total night calls',1)
 Total minutes
 = total day minutes + total eve minutes + total night minutes + total intlminutes.
 2)
